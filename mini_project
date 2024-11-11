@@ -1,0 +1,334 @@
+package mini_project;
+import java.util.*;
+
+import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+package mini_project;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Scanner;
+
+class Transaction {
+
+    // Transaction details
+    public String name;
+    public LocalDate date;
+    public LocalTime time;
+    public boolean paymentDone; // defaults to false
+    public String purpose;
+    public double amount;
+    public String transactionType; // "group" or "singular"
+    public String groupName; // name of the group, or null if singular
+    public String direction; // "incoming" or "outgoing"
+
+    // Constructor with default values for date, time, and paymentDone
+    public Transaction(String name, double amount, String transactionType, String groupName, String direction, String purpose) {
+        this.name = name;
+        this.date = LocalDate.now(); // Set current date
+        this.time = LocalTime.now(); // Set current time
+        this.paymentDone = false; // Defaults to false
+        this.purpose = purpose;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.groupName = transactionType.equals("group") ? groupName : null;
+        this.direction = direction;
+    }
+
+    // Method to display the transaction details
+    public void displayTransactionDetails() {
+        System.out.println("Transaction Details:");
+        System.out.println("Name: " + name);
+        System.out.println("Amount: " + amount);
+        System.out.println("Date: " + date);
+        System.out.println("Time: " + time);
+        System.out.println("Transaction Type: " + transactionType);
+        System.out.println("Group Name: " + (groupName == null ? "N/A" : groupName));
+        System.out.println("Direction: " + direction);
+        System.out.println("Payment Done: " + (paymentDone ? "Yes" : "No"));
+        System.out.println("Purpose of Split: " + purpose);
+    }
+
+    // Static method to take user input and create a Transaction object
+    public static Transaction getUserInput() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter amount: ");
+        double amount = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Is this a group transaction or singular (enter 'group' or 'singular')? ");
+        String transactionType = scanner.nextLine();
+
+        String groupName = null;
+        if (transactionType.equalsIgnoreCase("group")) {
+            System.out.print("Enter group name: ");
+            groupName = scanner.nextLine();
+        }
+
+        System.out.print("Is this an incoming or outgoing transaction? ");
+        String direction = scanner.nextLine();
+
+        System.out.print("Enter the purpose of the split: ");
+        String purpose = scanner.nextLine();
+
+        // Creating and returning a Transaction object
+        return new Transaction(name, amount, transactionType, groupName, direction, purpose);
+    }
+
+    // Method to mark the transaction as done
+    public void markAsDone() {
+        this.paymentDone = true;
+        System.out.println("Transaction marked as done.");
+    }
+}
+
+class ContactNode {
+	ContactNode left, right;
+	String phoneNumber;
+	String name; 
+	String email;
+
+	ContactNode(String name, String phoneNumber, String email) {
+		this.left = null;
+		this.right = null;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+	}
+
+	// Method to display contact details
+	void display() {
+		System.out.println("Name: " + name);
+		System.out.println("Phone: " + phoneNumber);
+		System.out.println("Email: " + email);
+	}
+}
+
+//Class for the binary search tree to manage contacts
+class ContactBST {
+	ContactNode root; // Root node of the tree
+	Scanner sc = new Scanner(System.in);
+
+	// Constructor initializes an empty tree
+	ContactBST() {
+		root = null;
+	}
+
+	public void insertContact() {
+        boolean flag = true;
+        while (flag) {
+		System.out.print("Enter Contact Name: ");
+		String name = sc.nextLine();
+		System.out.print("Enter Phone Number: ");
+		String phoneNumber = sc.nextLine();
+		System.out.print("Enter Email: ");
+		String email = sc.nextLine(); // Now asking for email instead of balance
+
+		ContactNode newContact = new ContactNode(name, phoneNumber, email);
+		if (root == null) {
+			root = newContact; // First contact becomes root
+			System.out.println("Contact inserted!");
+		} else {
+			ContactNode current = root;
+			while (true) {
+				if (name.compareToIgnoreCase(current.name) < 0) {
+					if (current.left == null) {
+						current.left = newContact;
+						System.out.println("Contact inserted!");
+						break;
+					}
+					current = current.left;
+				} else if (name.compareToIgnoreCase(current.name) > 0) {
+					if (current.right == null) {
+						current.right = newContact;
+						System.out.println("Contact inserted!");
+						break;
+					}
+					current = current.right;
+				} else {
+					System.out.println("Contact name already exists in contacts!");
+					break;
+				}
+			}
+		}
+		System.out.print("Enter more? 0:no or 1:yes? ");
+		int t = sc.nextInt();
+		if (t == 0) {
+			flag = false;
+		} else {
+			sc.nextLine(); // clear buffer
+			System.out.println();
+		}
+        }
+	}
+
+	// Method to search for a contact by name
+	public void searchContact() {
+		System.out.print("Enter Name to search: ");
+		String name = sc.nextLine();
+		ContactNode current = root;
+
+		while (current != null) {
+			if (name.equalsIgnoreCase(current.name)) {
+				System.out.println("Contact found!");
+				current.display();
+				return;
+			}
+			// Traverse left if the name is lexicographically smaller, else traverse right
+			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
+		}
+		System.out.println("Contact not found!");
+	}
+
+	// Method to delete a contact by name
+	public void deleteContact() {
+		System.out.print("Enter Name to delete: ");
+		String name = sc.nextLine();
+		if (searchContactByName(name)) {
+			root = deleteRec(root, name);
+			System.out.println("Contact deleted successfully!");
+		} else {
+			System.out.println("Contact not found!");
+		}
+	}
+
+	// Recursive function to delete a contact node by name
+	public ContactNode deleteRec(ContactNode root, String name) {
+		if (root == null) {
+			return null;
+		}
+		if (name.compareToIgnoreCase(root.name) < 0) {
+			root.left = deleteRec(root.left, name);
+		} else if (name.compareToIgnoreCase(root.name) > 0) {
+			root.right = deleteRec(root.right, name);
+		} else {
+			if (root.left == null) return root.right;
+			if (root.right == null) return root.left;
+			ContactNode minNode = findMin(root.right);
+			root.name = minNode.name;
+			root.phoneNumber = minNode.phoneNumber;
+			root.email = minNode.email;
+			root.right = deleteRec(root.right, minNode.name);
+		}
+		return root;
+	}
+
+	// Helper function to find the minimum node
+	public ContactNode findMin(ContactNode node) {
+		while (node.left != null) {
+			node = node.left;
+		}
+		return node;
+	}
+
+	// Method to display all contacts in ascending order by name
+	public void displayAllContacts() {
+		if (root == null) {
+			System.out.println("No contacts in the directory.");
+		} else {
+			System.out.println("Contacts:");
+			inOrderTraversal(root);
+		}
+	}
+
+	// In-order traversal to display contacts in sorted order by name
+	public void inOrderTraversal(ContactNode node) {
+		if (node != null) {
+			inOrderTraversal(node.left);
+			node.display();
+			inOrderTraversal(node.right);
+		}
+	}
+
+	// Check if a contact exists by name
+	public boolean searchContactByName(String name) {
+		ContactNode current = root;
+		while (current != null) {
+			if (name.equalsIgnoreCase(current.name)) {
+				return true;
+			}
+			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
+		}
+		return false;
+	}
+
+	// Method to update contact details by name
+	public void updateContact() {
+		System.out.print("Enter Name to update: ");
+		String name = sc.nextLine();
+		ContactNode current = root;
+
+		while (current != null) {
+			if (name.equalsIgnoreCase(current.name)) {
+				System.out.println("Contact found!");
+				current.display();
+				System.out.print("Enter new phone number: ");
+				current.phoneNumber = sc.nextLine();
+				System.out.print("Enter new email: ");
+				current.email = sc.nextLine(); // Now asking for new email instead of balance
+				System.out.println("Contact updated successfully!");
+				return;
+			}
+			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
+		}
+		System.out.println("Contact not found!");
+	}
+}
+
+//Main class to run the contact manager program
+public class Main {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		ContactBST bst = new ContactBST();
+		boolean exit = false;
+
+        do {
+            System.out.println("--- Contact Manager ---");
+            System.out.println("1. Split a Bill");
+            System.out.println("2. Add Transaction");
+            System.out.println("3. View What I Owe");
+            System.out.println("4. View What I am to Receive");
+            System.out.println("5. View All Past Transactions");
+            System.out.println("6. Split on a trip");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+            int choice = Integer.parseInt(sc.nextLine());
+
+            switch (choice) {
+                case 1:
+                    splitBill();
+                    break;
+                case 2:
+                    addTransaction();
+                    break;
+                case 3:
+                    viewWhatIOwe();
+                    break;
+                case 4:
+                    viewWhatIAmToReceive();
+                    break;
+                case 5:
+                    viewAllPastTransactions();
+                    break;
+                case 6:
+                    splitOnATrip();
+                    break;
+                case 7:
+                    exit = true;
+                    System.out.println("Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
+                    break;
+            }
+
+        } while (!exit);
+
+		sc.close();
+	}
+}

@@ -1,334 +1,263 @@
-package mini_project;
+package sem3_ds_ass7;
+
 import java.util.*;
 
-import java.util.Scanner;
-import java.time.LocalDate;
-import java.time.LocalTime;
+class Contact {
+    long mobile_number;
+    String name;
+    String emailid;
 
-package mini_project;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Scanner;
-
-class Transaction {
-
-    // Transaction details
-    public String name;
-    public LocalDate date;
-    public LocalTime time;
-    public boolean paymentDone; // defaults to false
-    public String purpose;
-    public double amount;
-    public String transactionType; // "group" or "singular"
-    public String groupName; // name of the group, or null if singular
-    public String direction; // "incoming" or "outgoing"
-
-    // Constructor with default values for date, time, and paymentDone
-    public Transaction(String name, double amount, String transactionType, String groupName, String direction, String purpose) {
-        this.name = name;
-        this.date = LocalDate.now(); // Set current date
-        this.time = LocalTime.now(); // Set current time
-        this.paymentDone = false; // Defaults to false
-        this.purpose = purpose;
-        this.amount = amount;
-        this.transactionType = transactionType;
-        this.groupName = transactionType.equals("group") ? groupName : null;
-        this.direction = direction;
+    public Contact(long number, String nm, String email) {
+        this.mobile_number = number;
+        name = nm;
+        emailid = email;
     }
 
-    // Method to display the transaction details
-    public void displayTransactionDetails() {
-        System.out.println("Transaction Details:");
-        System.out.println("Name: " + name);
-        System.out.println("Amount: " + amount);
-        System.out.println("Date: " + date);
-        System.out.println("Time: " + time);
-        System.out.println("Transaction Type: " + transactionType);
-        System.out.println("Group Name: " + (groupName == null ? "N/A" : groupName));
-        System.out.println("Direction: " + direction);
-        System.out.println("Payment Done: " + (paymentDone ? "Yes" : "No"));
-        System.out.println("Purpose of Split: " + purpose);
+    void display() {
+        System.out.println("\tName: " + name + "\n\tMobile Number: " + mobile_number + "\n\tEmail: " + emailid);
     }
 
-    // Static method to take user input and create a Transaction object
-    public static Transaction getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Enter amount: ");
-        double amount = Double.parseDouble(scanner.nextLine());
-
-        System.out.print("Is this a group transaction or singular (enter 'group' or 'singular')? ");
-        String transactionType = scanner.nextLine();
-
-        String groupName = null;
-        if (transactionType.equalsIgnoreCase("group")) {
-            System.out.print("Enter group name: ");
-            groupName = scanner.nextLine();
-        }
-
-        System.out.print("Is this an incoming or outgoing transaction? ");
-        String direction = scanner.nextLine();
-
-        System.out.print("Enter the purpose of the split: ");
-        String purpose = scanner.nextLine();
-
-        // Creating and returning a Transaction object
-        return new Transaction(name, amount, transactionType, groupName, direction, purpose);
-    }
-
-    // Method to mark the transaction as done
-    public void markAsDone() {
-        this.paymentDone = true;
-        System.out.println("Transaction marked as done.");
+    String getName() {
+        return name;
     }
 }
 
-class ContactNode {
-	ContactNode left, right;
-	String phoneNumber;
-	String name; 
-	String email;
-
-	ContactNode(String name, String phoneNumber, String email) {
-		this.left = null;
-		this.right = null;
-		this.name = name;
-		this.phoneNumber = phoneNumber;
-		this.email = email;
-	}
-
-	// Method to display contact details
-	void display() {
-		System.out.println("Name: " + name);
-		System.out.println("Phone: " + phoneNumber);
-		System.out.println("Email: " + email);
-	}
-}
-
-//Class for the binary search tree to manage contacts
 class ContactBST {
-	ContactNode root; // Root node of the tree
-	Scanner sc = new Scanner(System.in);
-
-	// Constructor initializes an empty tree
-	ContactBST() {
-		root = null;
-	}
-
-	public void insertContact() {
-        boolean flag = true;
-        while (flag) {
-		System.out.print("Enter Contact Name: ");
-		String name = sc.nextLine();
-		System.out.print("Enter Phone Number: ");
-		String phoneNumber = sc.nextLine();
-		System.out.print("Enter Email: ");
-		String email = sc.nextLine(); // Now asking for email instead of balance
-
-		ContactNode newContact = new ContactNode(name, phoneNumber, email);
-		if (root == null) {
-			root = newContact; // First contact becomes root
-			System.out.println("Contact inserted!");
-		} else {
-			ContactNode current = root;
-			while (true) {
-				if (name.compareToIgnoreCase(current.name) < 0) {
-					if (current.left == null) {
-						current.left = newContact;
-						System.out.println("Contact inserted!");
-						break;
-					}
-					current = current.left;
-				} else if (name.compareToIgnoreCase(current.name) > 0) {
-					if (current.right == null) {
-						current.right = newContact;
-						System.out.println("Contact inserted!");
-						break;
-					}
-					current = current.right;
-				} else {
-					System.out.println("Contact name already exists in contacts!");
-					break;
-				}
-			}
-		}
-		System.out.print("Enter more? 0:no or 1:yes? ");
-		int t = sc.nextInt();
-		if (t == 0) {
-			flag = false;
-		} else {
-			sc.nextLine(); // clear buffer
-			System.out.println();
-		}
-        }
-	}
-
-	// Method to search for a contact by name
-	public void searchContact() {
-		System.out.print("Enter Name to search: ");
-		String name = sc.nextLine();
-		ContactNode current = root;
-
-		while (current != null) {
-			if (name.equalsIgnoreCase(current.name)) {
-				System.out.println("Contact found!");
-				current.display();
-				return;
-			}
-			// Traverse left if the name is lexicographically smaller, else traverse right
-			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
-		}
-		System.out.println("Contact not found!");
-	}
-
-	// Method to delete a contact by name
-	public void deleteContact() {
-		System.out.print("Enter Name to delete: ");
-		String name = sc.nextLine();
-		if (searchContactByName(name)) {
-			root = deleteRec(root, name);
-			System.out.println("Contact deleted successfully!");
-		} else {
-			System.out.println("Contact not found!");
-		}
-	}
-
-	// Recursive function to delete a contact node by name
-	public ContactNode deleteRec(ContactNode root, String name) {
-		if (root == null) {
-			return null;
-		}
-		if (name.compareToIgnoreCase(root.name) < 0) {
-			root.left = deleteRec(root.left, name);
-		} else if (name.compareToIgnoreCase(root.name) > 0) {
-			root.right = deleteRec(root.right, name);
-		} else {
-			if (root.left == null) return root.right;
-			if (root.right == null) return root.left;
-			ContactNode minNode = findMin(root.right);
-			root.name = minNode.name;
-			root.phoneNumber = minNode.phoneNumber;
-			root.email = minNode.email;
-			root.right = deleteRec(root.right, minNode.name);
-		}
-		return root;
-	}
-
-	// Helper function to find the minimum node
-	public ContactNode findMin(ContactNode node) {
-		while (node.left != null) {
-			node = node.left;
-		}
-		return node;
-	}
-
-	// Method to display all contacts in ascending order by name
-	public void displayAllContacts() {
-		if (root == null) {
-			System.out.println("No contacts in the directory.");
-		} else {
-			System.out.println("Contacts:");
-			inOrderTraversal(root);
-		}
-	}
-
-	// In-order traversal to display contacts in sorted order by name
-	public void inOrderTraversal(ContactNode node) {
-		if (node != null) {
-			inOrderTraversal(node.left);
-			node.display();
-			inOrderTraversal(node.right);
-		}
-	}
-
-	// Check if a contact exists by name
-	public boolean searchContactByName(String name) {
-		ContactNode current = root;
-		while (current != null) {
-			if (name.equalsIgnoreCase(current.name)) {
-				return true;
-			}
-			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
-		}
-		return false;
-	}
-
-	// Method to update contact details by name
-	public void updateContact() {
-		System.out.print("Enter Name to update: ");
-		String name = sc.nextLine();
-		ContactNode current = root;
-
-		while (current != null) {
-			if (name.equalsIgnoreCase(current.name)) {
-				System.out.println("Contact found!");
-				current.display();
-				System.out.print("Enter new phone number: ");
-				current.phoneNumber = sc.nextLine();
-				System.out.print("Enter new email: ");
-				current.email = sc.nextLine(); // Now asking for new email instead of balance
-				System.out.println("Contact updated successfully!");
-				return;
-			}
-			current = name.compareToIgnoreCase(current.name) < 0 ? current.left : current.right;
-		}
-		System.out.println("Contact not found!");
-	}
+    // Dummy BST class for storing and searching contacts
+    // Assuming ContactBST has a search method for finding contacts by name
+    public Contact search(String name) {
+        // Dummy implementation; replace with actual search logic
+        return null;
+    }
 }
 
-//Main class to run the contact manager program
-public class Main {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		ContactBST bst = new ContactBST();
-		boolean exit = false;
+// Custom hash map implementation for storing groups and their contacts
+class GroupMap {
+    private final int SIZE = 40;
+    private String[] groupNames = new String[SIZE];
+    private List<Contact>[] groupContacts = new ArrayList[SIZE];
 
+    private int hash(String key) {
+        return Math.abs(key.hashCode() % SIZE);
+    }
+
+    void put(String groupName) {
+        int hashVal = hash(groupName);
+        int i = 1;
+
+        while (groupNames[hashVal] != null && !groupNames[hashVal].equals(groupName)) {
+            hashVal = (hash(hashVal) + i * i) % SIZE; // Quadratic probing
+            i++;
+        }
+
+        if (groupNames[hashVal] == null) {
+            groupNames[hashVal] = groupName;
+            groupContacts[hashVal] = new ArrayList<>();
+            System.out.println("Group '" + groupName + "' created.");
+        } else {
+            System.out.println("Group '" + groupName + "' already exists.");
+        }
+    }
+
+    private int hash(int hashVal) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	List<Contact> get(String groupName) {
+        int hashVal = hash(groupName);
+        int i = 1;
+
+        while (groupNames[hashVal] != null) {
+            if (groupNames[hashVal].equals(groupName)) {
+                return groupContacts[hashVal];
+            }
+            hashVal = (hash(hashVal) + i * i) % SIZE; // Quadratic probing
+            i++;
+        }
+        return null; // Group not found
+    }
+}
+
+class GroupManager {
+    private ContactBST contactBST; // Main contact storage in BST
+    private GroupMap groupsMap; // Custom GroupMap for storing groups
+    Scanner sc = new Scanner(System.in);
+
+    public GroupManager(ContactBST contactBST) {
+        this.contactBST = contactBST;
+        this.groupsMap = new GroupMap();
+    }
+
+    void addGroup() {
+        System.out.print("Enter group name to add: ");
+        String groupName = sc.nextLine();
+        groupsMap.put(groupName);
+    }
+
+    void addContactToGroup() {
+        System.out.print("Enter group name: ");
+        String groupName = sc.nextLine();
+        System.out.print("Enter contact name to add: ");
+        String contactName = sc.nextLine();
+
+        Contact contact = contactBST.search(contactName);
+        if (contact == null) {
+            System.out.println("Contact '" + contactName + "' not found.");
+            return;
+        }
+
+        List<Contact> contacts = groupsMap.get(groupName);
+        if (contacts == null) {
+            System.out.println("Group '" + groupName + "' not found.");
+            return;
+        }
+
+        contacts.add(contact);
+        System.out.println("Contact '" + contactName + "' added to group '" + groupName + "'.");
+    }
+
+    void displayGroup() {
+        System.out.print("Enter group name to display: ");
+        String groupName = sc.nextLine();
+
+        List<Contact> groupContacts = groupsMap.get(groupName);
+        if (groupContacts == null) {
+            System.out.println("Group '" + groupName + "' not found.");
+            return;
+        }
+
+        System.out.println("Contacts in group '" + groupName + "':");
+        for (Contact contact : groupContacts) {
+            System.out.println(contact.getName());
+        }
+    }
+
+    void handleTransactions() {
+        System.out.print("Enter group name for transactions: ");
+        String groupName = sc.nextLine();
+
+        System.out.print("How many transactions do you want to enter? ");
+        int transactionCount = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        for (int i = 1; i <= transactionCount; i++) {
+            System.out.println("\nEnter details for transaction " + i + ":");
+            System.out.print("Enter name: ");
+            String name = sc.nextLine();
+
+            System.out.print("What does " + name + " owe? ");
+            double amountOwed = sc.nextDouble();
+            sc.nextLine(); // Consume newline
+
+            System.out.print("Who owes " + name + "? ");
+            String personOwedTo = sc.nextLine();
+
+            String formattedDateTime = java.time.LocalDateTime.now().toString();
+            System.out.println("\nTransaction " + i + " Details:");
+            System.out.println("Serial No: " + i);
+            System.out.println("Date and Time: " + formattedDateTime);
+            System.out.println("Group Name: " + groupName);
+            System.out.println("Name: " + name);
+            System.out.println("Amount Owed: " + amountOwed);
+            System.out.println("Person Owed To: " + personOwedTo);
+        }
+    }
+
+    void menu() {
+        int choice;
         do {
-            System.out.println("--- Contact Manager ---");
-            System.out.println("1. Split a Bill");
-            System.out.println("2. Add Transaction");
-            System.out.println("3. View What I Owe");
-            System.out.println("4. View What I am to Receive");
-            System.out.println("5. View All Past Transactions");
-            System.out.println("6. Split on a trip");
-            System.out.println("7. Exit");
-            System.out.print("Choose an option: ");
-            int choice = Integer.parseInt(sc.nextLine());
+            System.out.println("\nGROUP MANAGER MENU:");
+            System.out.println(" 1. ADD GROUP\n 2. ADD CONTACT TO GROUP\n 3. DISPLAY GROUP\n 4. ENTER TRANSACTIONS\n 0. EXIT");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
 
             switch (choice) {
-                case 1:
-                    splitBill();
-                    break;
-                case 2:
-                    addTransaction();
-                    break;
-                case 3:
-                    viewWhatIOwe();
-                    break;
-                case 4:
-                    viewWhatIAmToReceive();
-                    break;
-                case 5:
-                    viewAllPastTransactions();
-                    break;
-                case 6:
-                    splitOnATrip();
-                    break;
-                case 7:
-                    exit = true;
-                    System.out.println("Goodbye!");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please select a valid option.");
-                    break;
+                case 1 -> addGroup();
+                case 2 -> addContactToGroup();
+                case 3 -> displayGroup();
+                case 4 -> handleTransactions();
+                case 0 -> System.out.println("Exiting Group Manager...");
+                default -> System.out.println("Invalid choice. Please try again.");
             }
+        } while (choice != 0);
+    }
+}
 
-        } while (!exit);
+class TripManager {
+    private Map<String, List<String>> trips = new HashMap<>();
+    private Scanner sc = new Scanner(System.in);
 
-		sc.close();
-	}
+    void addTrip() {
+        System.out.print("Enter trip destination: ");
+        String destination = sc.nextLine();
+
+        System.out.print("Enter names of participants (comma-separated): ");
+        String[] participants = sc.nextLine().split(",");
+
+        List<String> participantList = new ArrayList<>(Arrays.asList(participants));
+        trips.put(destination, participantList);
+
+        System.out.println("Trip to " + destination + " added with participants.");
+    }
+
+    void displayTrip() {
+        System.out.print("Enter trip destination to display: ");
+        String destination = sc.nextLine();
+
+        List<String> participants = trips.get(destination);
+        if (participants == null) {
+            System.out.println("No trip found for destination: " + destination);
+            return;
+        }
+
+        System.out.println("Trip to " + destination + " includes the following participants:");
+        for (String participant : participants) {
+            System.out.println("- " + participant.trim());
+        }
+    }
+
+    void tripMenu() {
+        int choice;
+        do {
+            System.out.println("\nTRIP MANAGER MENU:");
+            System.out.println(" 1. ADD TRIP\n 2. DISPLAY TRIP\n 0. EXIT");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1 -> addTrip();
+                case 2 -> displayTrip();
+                case 0 -> System.out.println("Exiting Trip Manager...");
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 0);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ContactBST contactBST = new ContactBST();
+        GroupManager groupManager = new GroupManager(contactBST);
+        TripManager tripManager = new TripManager();
+
+        Scanner sc = new Scanner(System.in);
+        int mainChoice;
+        do {
+            System.out.println("\nMAIN MENU:");
+            System.out.println(" 1. GROUP MANAGER\n 2. TRIP MANAGER\n 0. EXIT");
+            System.out.print("Enter your choice: ");
+            mainChoice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (mainChoice) {
+                case 1 -> groupManager.menu();
+                case 2 -> tripManager.tripMenu();
+                case 0 -> System.out.println("Exiting the program...");
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        } while (mainChoice != 0);
+    }
 }
